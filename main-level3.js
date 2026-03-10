@@ -29,7 +29,6 @@ addEventListener("DOMContentLoaded", initApp);
 // 앱 초기화: 할 일 목록을 조회하고 랜더링
 async function initApp() {
   const todos = await getTodos();
-  console.log("전체 할 일 목록:", todos);
   renderTodoList(todos);
 }
 
@@ -42,6 +41,20 @@ async function getTodos() {
   const response = await fetch(BASE_URL);
   const todos = await response.json();
   return todos;
+}
+
+// 서버에 할 일 목록 추가
+async function addTodo(title) {
+  const response = await fetch(BASE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title, completed: false }),
+  });
+
+  const newTodo = await response.json();
+  return newTodo;
 }
 
 // ==========================
@@ -81,3 +94,20 @@ function renderTodoList(todos) {
     todoListElement.append(todoItemElement);
   });
 }
+
+// ==========================
+// Event Listeners
+// ==========================
+todoFormElement.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const title = todoInputElement.value.trim();
+  if (!title) return;
+
+  const newTodo = await addTodo(title);
+
+  const newTodoElement = renderTodo(newTodo);
+  todoListElement.append(newTodoElement);
+
+  todoInputElement.value = "";
+});
