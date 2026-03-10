@@ -57,6 +57,20 @@ async function addTodo(title) {
   return newTodo;
 }
 
+// 서버의 할 일 완료 상태 토글
+async function toggleTodo(id, completed) {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ completed: completed }),
+  });
+
+  const updatedTodo = await response.json();
+  return updatedTodo;
+}
+
 // ==========================
 // Render
 // ==========================
@@ -74,6 +88,13 @@ function renderTodo(todo) {
   toggleButton.type = "button";
   toggleButton.classList.add("btn-toggle");
   toggleButton.textContent = todo.completed ? "완료" : "미완료";
+
+  toggleButton.addEventListener("click", async () => {
+    const updatedTodo = await toggleTodo(todo.id, !todo.completed);
+
+    todoItemElement.classList.toggle("completed", updatedTodo.completed);
+    toggleButton.textContent = updatedTodo.completed ? "완료" : "미완료";
+  });
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";

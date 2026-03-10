@@ -20,5 +20,6 @@
       "title": "안녕",
       "completed": false
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
