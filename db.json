@@ -14,11 +14,6 @@
       "id": "3",
       "title": "CSS 플렉스박스 연습",
       "completed": true
-    },
-    {
-      "id": "9b9c",
-      "title": "안녕",
-      "completed": false
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -71,6 +71,23 @@ async function toggleTodo(id, completed) {
   return updatedTodo;
 }
 
+// 서버에서 할 일 삭제
+async function deleteTodo(id) {
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) throw new Error("Todo 삭제 실패");
+
+    return true;
+  } catch (error) {
+    console.error("Error Delete Todo:", error);
+    alert("삭제 중 오류가 발생했습니다.");
+    return false;
+  }
+}
+
 // ==========================
 // Render
 // ==========================
@@ -100,6 +117,12 @@ function renderTodo(todo) {
   deleteButton.type = "button";
   deleteButton.classList.add("btn-delete");
   deleteButton.textContent = "삭제";
+
+  deleteButton.addEventListener("click", async () => {
+    const success = await deleteTodo(todo.id);
+
+    if (success) todoItemElement.remove();
+  });
 
   todoItemElement.append(todoTitleElement, toggleButton, deleteButton);
 
