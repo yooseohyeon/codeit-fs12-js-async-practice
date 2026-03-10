@@ -28,8 +28,17 @@ addEventListener("DOMContentLoaded", initApp);
 
 // 앱 초기화: 할 일 목록을 조회하고 랜더링
 async function initApp() {
-  const todos = await getTodos();
-  renderTodoList(todos);
+  try {
+    const todos = await getTodos();
+
+    if (todos.length === 0) {
+      todoListElement.innerHTML = "<p>할 일이 없습니다.</p>";
+    } else {
+      renderTodoList(todos);
+    }
+  } catch (error) {
+    alert(error.message + " 잠시 후 다시 시도해주세요.");
+  }
 }
 
 // ==========================
@@ -39,11 +48,12 @@ async function initApp() {
 // 서버에서 할 일 목록 조회
 async function getTodos() {
   const response = await fetch(BASE_URL);
-  const todos = await response.json();
-  return todos;
+  if (!response.ok)
+    throw new Error("할 일 목록을 불러오는 중 오류가 발생했습니다.");
+  return response.json();
 }
 
-// 서버에 할 일 목록 추가
+// 서버에 할 일 추가
 async function addTodo(title) {
   const response = await fetch(BASE_URL, {
     method: "POST",
@@ -53,8 +63,9 @@ async function addTodo(title) {
     body: JSON.stringify({ title, completed: false }),
   });
 
-  const newTodo = await response.json();
-  return newTodo;
+  if (!response.ok) throw new Error("할 일을 추가하던 중 오류가 발생했습니다.");
+
+  return response.json();
 }
 
 // 서버의 할 일 완료 상태 토글
@@ -67,25 +78,21 @@ async function toggleTodo(id, completed) {
     body: JSON.stringify({ completed: completed }),
   });
 
-  const updatedTodo = await response.json();
-  return updatedTodo;
+  if (!response.ok)
+    throw new Error("할 일의 완료 상태를 변경하던 중 오류가 발생했습니다.");
+  return response.json();
 }
 
 // 서버에서 할 일 삭제
 async function deleteTodo(id) {
-  try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
 
-    if (!response.ok) throw new Error("Todo 삭제 실패");
+  if (!response.ok)
+    throw new Error("할 일 삭제를 하던 중 오류가 발생했습니다.");
 
-    return true;
-  } catch (error) {
-    console.error("Error Delete Todo:", error);
-    alert("삭제 중 오류가 발생했습니다.");
-    return false;
-  }
+  return true;
 }
 
 // ==========================
@@ -107,10 +114,14 @@ function renderTodo(todo) {
   toggleButton.textContent = todo.completed ? "완료" : "미완료";
 
   toggleButton.addEventListener("click", async () => {
-    const updatedTodo = await toggleTodo(todo.id, !todo.completed);
+    try {
+      const updatedTodo = await toggleTodo(todo.id, !todo.completed);
 
-    todoItemElement.classList.toggle("completed", updatedTodo.completed);
-    toggleButton.textContent = updatedTodo.completed ? "완료" : "미완료";
+      todoItemElement.classList.toggle("completed", updatedTodo.completed);
+      toggleButton.textContent = updatedTodo.completed ? "완료됨" : "미완료";
+    } catch (error) {
+      alert(error.message + " 잠시 후 다시 시도해주세요.");
+    }
   });
 
   const deleteButton = document.createElement("button");
@@ -119,9 +130,12 @@ function renderTodo(todo) {
   deleteButton.textContent = "삭제";
 
   deleteButton.addEventListener("click", async () => {
-    const success = await deleteTodo(todo.id);
-
-    if (success) todoItemElement.remove();
+    try {
+      const success = await deleteTodo(todo.id);
+      if (success) todoItemElement.remove();
+    } catch (error) {
+      alert(error.message + " 잠시 후 다시 시도해주세요.");
+    }
   });
 
   todoItemElement.append(todoTitleElement, toggleButton, deleteButton);
@@ -148,10 +162,14 @@ todoFormElement.addEventListener("submit", async (e) => {
   const title = todoInputElement.value.trim();
   if (!title) return;
 
-  const newTodo = await addTodo(title);
+  try {
+    const newTodo = await addTodo(title);
 
-  const newTodoElement = renderTodo(newTodo);
-  todoListElement.append(newTodoElement);
+    const newTodoElement = renderTodo(newTodo);
+    todoListElement.append(newTodoElement);
+  } catch (error) {
+    alert(error.message + " 잠시 후 다시 시도해주세요.");
+  }
 
   todoInputElement.value = "";
 });
