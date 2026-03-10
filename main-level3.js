@@ -21,6 +21,8 @@ const todoFormElement = document.querySelector("#todo-form");
 const todoInputElement = document.querySelector("#todo-input");
 const todoListElement = document.querySelector("#todo-list");
 
+const toastContainer = document.querySelector("#toast-container");
+
 // ==========================
 // App Init
 // ==========================
@@ -38,8 +40,24 @@ async function initApp() {
       renderTodoList(todos);
     }
   } catch (error) {
-    alert(error.message + " 잠시 후 다시 시도해주세요.");
+    showToast(error.message + " 잠시 후 다시 시도해주세요.");
   }
+}
+
+// ==========================
+// utility
+// ==========================
+function showToast(message, duration = 3000) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toastContainer.removeChild(toast), 300);
+  }, duration);
 }
 
 // ==========================
@@ -71,7 +89,7 @@ async function addTodo(title) {
 
 // 서버의 할 일 완료 상태 토글
 async function toggleTodo(id, completed) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
+  const response = await fetch(`BASE_URL/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -121,7 +139,7 @@ function renderTodo(todo) {
       todoItemElement.classList.toggle("completed", updatedTodo.completed);
       toggleButton.textContent = updatedTodo.completed ? "완료됨" : "미완료";
     } catch (error) {
-      alert(error.message + " 잠시 후 다시 시도해주세요.");
+      showToast(error.message + " 잠시 후 다시 시도해주세요.");
     }
   });
 
@@ -135,7 +153,7 @@ function renderTodo(todo) {
       const success = await deleteTodo(todo.id);
       if (success) todoItemElement.remove();
     } catch (error) {
-      alert(error.message + " 잠시 후 다시 시도해주세요.");
+      showToast(error.message + " 잠시 후 다시 시도해주세요.");
     }
   });
 
@@ -169,7 +187,7 @@ todoFormElement.addEventListener("submit", async (e) => {
     const newTodoElement = renderTodo(newTodo);
     todoListElement.append(newTodoElement);
   } catch (error) {
-    alert(error.message + " 잠시 후 다시 시도해주세요.");
+    showToast(error.message + " 잠시 후 다시 시도해주세요.");
   }
 
   todoInputElement.value = "";
