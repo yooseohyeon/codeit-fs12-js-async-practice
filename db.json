@@ -1,20 +1,7 @@
 {
   "todos": [
-    {
-      "id": "1",
-      "title": "자바스크립트 복습하기",
-      "completed": false
-    },
-    {
-      "id": "2",
-      "title": "fetch 과제 풀기",
-      "completed": false
-    },
-    {
-      "id": "3",
-      "title": "CSS 플렉스박스 연습",
-      "completed": true
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+    { "id": 1, "title": "자바스크립트 복습하기", "completed": false },
+    { "id": 2, "title": "fetch 과제 풀기", "completed": false },
+    { "id": 3, "title": "CSS 플렉스박스 연습", "completed": true }
+  ]
 }

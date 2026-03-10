@@ -120,3 +120,8 @@ h1 {
 .todo-item .btn-delete:hover {
   background-color: #ffebee;
 }
+
+.empty-message {
+  text-align: center;
+  color: #999;
+}
